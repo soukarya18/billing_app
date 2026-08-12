@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Billing App</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f1f3f5;
+            color: #111;
+        }
+
+        .app {
+            max-width: 1050px;
+            margin: auto;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            border: 0;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-primary { background: #198754; color: white; }
+        .btn-secondary { background: #0d6efd; color: white; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-light { background: white; border: 1px solid #bbb; }
+
+        .bill {
+            background: white;
+            padding: 28px;
+            box-shadow: 0 2px 12px rgba(0,0,0,.12);
+            border: 1px solid #ddd;
+        }
+
+        .shop-header {
+            text-align: center;
+            border-bottom: 2px solid #111;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        .shop-header input {
+            width: 100%;
+            border: 0;
+            text-align: center;
+            outline: none;
+            background: transparent;
+        }
+
+        #shopName {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        #shopAddress {
+            font-size: 15px;
+            margin-top: 6px;
+        }
+
+        .bill-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .customer-box {
+            border: 1px solid #222;
+            padding: 12px;
+            margin-bottom: 20px;
+        }
+
+        .customer-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 9px;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .bill-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .bill-table th,
+        .bill-table td {
+            border: 1px solid #222;
+            padding: 8px;
+        }
+
+        .bill-table th {
+            background: #eee;
+            text-align: center;
+        }
+
+        .bill-table .description {
+            width: 44%;
+        }
+
+        .bill-table .serial {
+            width: 8%;
+            text-align: center;
+        }
+
+        .bill-table .qty,
+        .bill-table .rate-column,
+        .bill-table .amount {
+            width: 16%;
+        }
+
+        .bill-table input {
+            border: 0;
+            padding: 6px 4px;
+            border-radius: 0;
+            background: transparent;
+        }
+
+        .bill-table input:focus {
+            outline: 2px solid #0d6efd;
+            outline-offset: -2px;
+            background: #fff;
+        }
+
+        .rate-input {
+            width: 100% !important;
+            font-weight: 600;
+        }
+
+        #billNo {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .number-input {
+            text-align: right;
+        }
+
+        .amount-cell {
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .delete-cell {
+            width: 40px;
+            border-left: 0 !important;
+            border-right: 0 !important;
+        }
+
+        .delete-row {
+            background: transparent;
+            color: #dc3545;
+            font-size: 18px;
+            padding: 2px 5px;
+        }
+
+        .total-row td {
+            font-weight: bold;
+            font-size: 17px;
+            padding: 12px 8px;
+        }
+
+        .total-label {
+            text-align: right;
+        }
+
+        .footer {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .signature {
+            width: 220px;
+            text-align: center;
+            padding-top: 25px;
+            border-top: 1px solid #222;
+        }
+
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            display: none;
+            border-radius: 5px;
+        }
+
+        .success { background: #d1e7dd; color: #0f5132; }
+        .error { background: #f8d7da; color: #842029; }
+
+        @media (max-width: 650px) {
+            body { padding: 8px; }
+
+            .bill { padding: 12px; }
+
+            .customer-grid,
+            .bill-info {
+                grid-template-columns: 1fr;
+            }
+
+            #shopName { font-size: 22px; }
+
+            .bill-table {
+                font-size: 12px;
+            }
+
+            .bill-table th,
+            .bill-table td {
+                padding: 5px;
+            }
+
+            .bill-table .description { width: 38%; }
+            .bill-table .serial { width: 9%; }
+            .bill-table .qty,
+            .bill-table .rate-column,
+            .bill-table .amount { width: 17%; }
+
+            .footer {
+                flex-direction: column;
+            }
+        }
+
+        @media print {
+            body {
+                padding: 0;
+                background: white;
+            }
+
+            .toolbar,
+            .screen-only,
+            .delete-cell,
+            #message {
+                display: none !important;
+            }
+
+            .app {
+                max-width: none;
+            }
+
+            .bill {
+                box-shadow: none;
+                border: 0;
+                padding: 10mm;
+            }
+
+            input {
+                border: 0 !important;
+            }
+
+            .bill-table .description { width: 44%; }
+        }
+    </style>
+</head>
+
+<body>
+<div class="app">
+
+    <div class="toolbar">
+        <h1>Billing App</h1>
+
+        <div class="actions">
+            <button class="btn-light" onclick="newBill()">New Bill</button>
+            <button class="btn-secondary" onclick="window.print()">Print</button>
+            <button class="btn-primary" onclick="saveBill()">Save Bill</button>
+        </div>
+    </div>
+
+    <div id="message" class="message"></div>
+
+    <div class="bill" id="printArea">
+
+        <div class="shop-header">
+            <input id="shopName" value="SI Garments " placeholder="SHOP NAME">
+            <input id="shopAddress" value="2/3 kolkata " placeholder="Shop Address">
+        </div>
+
+        <div class="bill-info">
+            <div>
+                <label>Bill No.</label>
+                <input id="billNo" value="{{ next_bill_no }}" readonly>
+            </div>
+
+            <div>
+                <label>Date</label>
+                <input id="billDate" type="date" value="{{ today }}">
+            </div>
+        </div>
+
+        <div class="customer-box">
+            <div class="customer-grid">
+                <div>
+                    <label>Customer Name</label>
+                    <input id="customerName" placeholder="Customer name">
+                </div>
+
+                <div>
+                    <label>Customer Phone Number</label>
+                    <input id="customerPhone" type="tel" placeholder="Phone number">
+                </div>
+            </div>
+        </div>
+
+        <table class="bill-table">
+            <thead>
+                <tr>
+                    <th class="description">Description</th>
+                    <th class="serial">S.No</th>
+                    <th class="qty">Quantity</th>
+                    <th class="rate-column">Rate</th>
+                    <th class="amount">Amount</th>
+                    <th class="delete-cell screen-only"></th>
+                </tr>
+            </thead>
+
+            <tbody id="itemsBody"></tbody>
+
+            <tfoot>
+                <tr class="total-row">
+                    <td colspan="4" class="total-label">GRAND TOTAL</td>
+                    <td id="grandTotal" class="amount-cell">₹0.00</td>
+                    <td class="delete-cell screen-only"></td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div class="screen-only" style="margin-top:12px;">
+            <button class="btn-secondary" onclick="addRow()">+ Add Item</button>
+        </div>
+
+        <div class="footer">
+            <div>Thank you for your business.</div>
+            <div class="signature">Authorized Signature</div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const body = document.getElementById("itemsBody");
+
+    function money(value) {
+        return "₹" + Number(value || 0).toFixed(2);
+    }
+
+    function addRow(description = "", quantity = "", rate = "") {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td>
+                <input class="description-input" value="${escapeHtml(description)}">
+            </td>
+
+            <td class="serial"></td>
+
+            <td>
+                <input class="quantity number-input" type="number" min="0" step="any"
+                       value="${quantity}" placeholder="0">
+            </td>
+
+            <td>
+                <input class="rate-input number-input" type="number" min="0" step="any"
+                       value="${rate}" placeholder="0.00" inputmode="decimal">
+            </td>
+
+            <td class="amount-cell">₹0.00</td>
+
+            <td class="delete-cell screen-only">
+                <button class="delete-row" onclick="deleteRow(this)">×</button>
+            </td>
+        `;
+
+        body.appendChild(row);
+
+        row.querySelector(".quantity").addEventListener("input", calculate);
+        row.querySelector(".rate-input").addEventListener("input", calculate);
+        row.querySelector(".rate-input").addEventListener("blur", handleRateComplete);
+        row.querySelector(".description-input").addEventListener("input", calculate);
+
+        calculate();
+    }
+
+    function deleteRow(button) {
+        const row = button.closest("tr");
+        row.remove();
+
+        if (body.children.length === 0) {
+            addRow();
+        }
+
+        calculate();
+    }
+
+    function handleRateComplete(event) {
+        const rateInput = event.target;
+        const row = rateInput.closest("tr");
+
+        // Once the current row's rate is completed, automatically create
+        // the next row. The manual "+ Add Item" button remains available.
+        if (
+            row === body.lastElementChild &&
+            rateInput.value.trim() !== ""
+        ) {
+            addRow();
+        }
+    }
+
+    function calculate() {
+        let total = 0;
+
+        [...body.children].forEach((row, index) => {
+            row.querySelector(".serial").textContent = index + 1;
+
+            const qty = parseFloat(row.querySelector(".quantity").value) || 0;
+            const rate = parseFloat(row.querySelector(".rate-input").value) || 0;
+            const amount = qty * rate;
+
+            row.querySelector(".amount-cell").textContent = money(amount);
+            total += amount;
+        });
+
+        document.getElementById("grandTotal").textContent = money(total);
+    }
+
+    function getBillData() {
+        const items = [...body.children].map(row => ({
+            description: row.querySelector(".description-input").value.trim(),
+            quantity: parseFloat(row.querySelector(".quantity").value) || 0,
+            rate: parseFloat(row.querySelector(".rate-input").value) || 0
+        })).filter(item => item.description || item.quantity !== 0 || item.rate !== 0);
+
+        return {
+            bill_no: document.getElementById("billNo").value.trim(),
+            date: document.getElementById("billDate").value,
+            shop_name: document.getElementById("shopName").value.trim(),
+            shop_address: document.getElementById("shopAddress").value.trim(),
+            customer_name: document.getElementById("customerName").value.trim(),
+            customer_phone: document.getElementById("customerPhone").value.trim(),
+            items: items
+        };
+    }
+
+    async function saveBill() {
+        const data = getBillData();
+
+        if (!data.customer_name) {
+            showMessage("Please enter customer name.", false);
+            return;
+        }
+
+        if (data.items.length === 0) {
+            showMessage("Please add at least one item.", false);
+            return;
+        }
+
+        try {
+            const response = await fetch("/api/save", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (!response.ok || !result.ok) {
+                showMessage(result.message || "Could not save bill.", false);
+                return;
+            }
+
+            document.getElementById("billNo").value = result.bill.bill_no;
+            showMessage(result.message, true);
+        } catch (error) {
+            showMessage("Server error. Please try again.", false);
+        }
+    }
+
+    async function newBill() {
+        try {
+            const response = await fetch("/api/next-bill-no");
+            const result = await response.json();
+            document.getElementById("billNo").value = result.bill_no || "";
+        } catch (error) {
+            document.getElementById("billNo").value = "";
+        }
+
+        document.getElementById("billDate").value =
+            new Date().toISOString().slice(0, 10);
+        document.getElementById("customerName").value = "";
+        document.getElementById("customerPhone").value = "";
+
+        body.innerHTML = "";
+        addRow();
+
+        showMessage("New bill ready.", true);
+    }
+
+    function showMessage(text, success) {
+        const box = document.getElementById("message");
+        box.textContent = text;
+        box.className = "message " + (success ? "success" : "error");
+        box.style.display = "block";
+
+        setTimeout(() => {
+            box.style.display = "none";
+        }, 3000);
+    }
+
+    function escapeHtml(value) {
+        return String(value)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+    }
+
+    // Start with one empty item row.
+    addRow();
+</script>
+</body>
+</html>

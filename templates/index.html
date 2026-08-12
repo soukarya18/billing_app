@@ -319,7 +319,7 @@
         <div class="bill-info">
             <div>
                 <label>Bill No.</label>
-                <input id="billNo" value="{{ next_bill_no }}" readonly>
+                <input id="billNo" placeholder="Enter bill number">
             </div>
 
             <div>
@@ -484,6 +484,11 @@
     async function saveBill() {
         const data = getBillData();
 
+        if (!data.bill_no) {
+            showMessage("Please enter bill number.", false);
+            return;
+        }
+
         if (!data.customer_name) {
             showMessage("Please enter customer name.", false);
             return;
@@ -515,15 +520,8 @@
         }
     }
 
-    async function newBill() {
-        try {
-            const response = await fetch("/api/next-bill-no");
-            const result = await response.json();
-            document.getElementById("billNo").value = result.bill_no || "";
-        } catch (error) {
-            document.getElementById("billNo").value = "";
-        }
-
+    function newBill() {
+        document.getElementById("billNo").value = "";
         document.getElementById("billDate").value =
             new Date().toISOString().slice(0, 10);
         document.getElementById("customerName").value = "";

@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, jsonify
 from datetime import date
 from pathlib import Path
 import json
-import re
 
 app = Flask(__name__)
 
@@ -12,7 +11,7 @@ BILLS_FILE = DATA_DIR / "bills.json"
 
 
 def load_bills() -> list:
-    """Load all saved bills from the JSON file."""
+    """Load saved bills from the JSON file."""
     if not BILLS_FILE.exists():
         return []
 
@@ -23,70 +22,65 @@ def load_bills() -> list:
 
 
 def save_bills(bills: list) -> None:
-    """Save all bills to the JSON file."""
+    """Save bills to the JSON file."""
     BILLS_FILE.write_text(
         json.dumps(bills, indent=2, ensure_ascii=False),
         encoding="utf-8"
     )
 
 
-def get_next_bill_no(bills: list | None = None) -> str:
-    """Return the next available BILL-XXXX number."""
-    if bills is None:
-        bills = load_bills()
-
-    highest_number = 0
-
-    for bill in bills:
-        bill_no = str(bill.get("bill_no", ""))
-        match = re.fullmatch(r"BILL-(\d+)", bill_no, re.IGNORECASE)
-        if match:
-            highest_number = max(highest_number, int(match.group(1)))
-
-    return f"BILL-{highest_number + 1:04d}"
-
-
 @app.route("/")
 def index():
-    bills = load_bills()
     return render_template(
         "index.html",
-        today=date.today().isoformat(),
-        next_bill_no=get_next_bill_no(bills)
+        today=date.today().isoformat()
     )
-
-
-@app.get("/api/next-bill-no")
-def next_bill_no():
-    """Return a fresh bill number for a new bill."""
-    return jsonify({"bill_no": get_next_bill_no()})
 
 
 @app.post("/api/save")
 def save_bill():
     data = request.get_json(force=True)
 
+    bill_no = str(data.get("bill_no", "")).strip()
+    if not bill_no:
+        return jsonify({
+            "ok": False,
+            "message": "Bill number is required."
+        }), 400
+
     if not data.get("customer_name", "").strip():
-        return jsonify({"ok": False, "message": "Customer name is required."}), 400
+        return jsonify({
+            "ok": False,
+            "message": "Customer name is required."
+        }), 400
 
     items = data.get("items", [])
     if not items:
-        return jsonify({"ok": False, "message": "Add at least one item."}), 400
+        return jsonify({
+            "ok": False,
+            "message": "Add at least one item."
+        }), 400
 
-    # Recalculate totals on the server so the saved bill is always accurate.
+    # Description is optional. A row is saved when it has either
+    # a description, quantity, or rate.
     clean_items = []
     grand_total = 0.0
 
     for item in items:
         description = str(item.get("description", "")).strip()
-        if not description:
-            continue
 
         try:
             quantity = float(item.get("quantity", 0))
+        except (TypeError, ValueError):
+            quantity = 0
+
+        try:
             rate = float(item.get("rate", 0))
         except (TypeError, ValueError):
-            quantity, rate = 0, 0
+            rate = 0
+
+        if not description and quantity == 0 and rate == 0:
+            continue
 
         amount = quantity * rate
         grand_total += amount
@@ -100,18 +94,18 @@ def save_bill():
         })
 
     if not clean_items:
-        return jsonify({"ok": False, "message": "Add a valid item."}), 400
+        return jsonify({
+            "ok": False,
+            "message": "Add a valid item."
+        }), 400
 
     bills = load_bills()
-
-    # Always generate the bill number on the server to avoid duplicates.
-    bill_no = get_next_bill_no(bills)
 
     bill = {
         "bill_no": bill_no,
         "date": data.get("date", date.today().isoformat()),
-        "shop_name": data.get("shop_name", "").strip(),
-        "shop_address": data.get("shop_address", "").strip(),
+        "shop_name": "S.I. GARMENTS",
+        "shop_address": "S/73/1B, Marry Road, Kolkata-700018",
         "customer_name": data.get("customer_name", "").strip(),
         "customer_phone": data.get("customer_phone", "").strip(),
         "items": clean_items,
@@ -134,4 +128,7 @@ def get_bills():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="127.0.0.1", port=5000)
+    import os
+
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=False, host="0.0.0.0", port=port)

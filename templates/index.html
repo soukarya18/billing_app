@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Billing App</title>
+    <title>S.I. Garments Billing</title>
 
     <style>
         * { box-sizing: border-box; }
@@ -14,6 +14,7 @@
             font-family: Arial, Helvetica, sans-serif;
             background: #f1f3f5;
             color: #111;
+            font-size: 15px;
         }
 
         .app {
@@ -51,7 +52,6 @@
 
         .btn-primary { background: #198754; color: white; }
         .btn-secondary { background: #0d6efd; color: white; }
-        .btn-danger { background: #dc3545; color: white; }
         .btn-light { background: white; border: 1px solid #bbb; }
 
         .bill {
@@ -61,29 +61,53 @@
             border: 1px solid #ddd;
         }
 
+        /* =========================
+           S.I. GARMENTS HEADER
+           ========================= */
         .shop-header {
+            position: relative;
             text-align: center;
             border-bottom: 2px solid #111;
-            padding-bottom: 15px;
-            margin-bottom: 15px;
+            padding: 4px 155px 16px 155px;
+            margin-bottom: 16px;
         }
 
-        .shop-header input {
-            width: 100%;
-            border: 0;
+        .brand-name {
+            font-size: 34px;
+            font-weight: 800;
+            letter-spacing: 1px;
             text-align: center;
-            outline: none;
-            background: transparent;
         }
 
-        #shopName {
-            font-size: 30px;
-            font-weight: bold;
+        .proprietor {
+            margin-top: 4px;
+            font-size: 16px;
+            font-weight: 600;
         }
 
-        #shopAddress {
+        .business-type {
+            margin: 10px auto 7px;
+            max-width: 620px;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 1.35;
+        }
+
+        .shop-address {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .seller-contact {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 125px;
+            text-align: right;
             font-size: 15px;
-            margin-top: 6px;
+            font-weight: 700;
+            line-height: 1.25;
+            white-space: nowrap;
         }
 
         .bill-info {
@@ -117,7 +141,7 @@
             padding: 9px;
             border: 1px solid #aaa;
             border-radius: 4px;
-            font-size: 14px;
+            font-size: 15px;
         }
 
         .bill-table {
@@ -134,6 +158,7 @@
         .bill-table th {
             background: #eee;
             text-align: center;
+            font-size: 15px;
         }
 
         .bill-table .description {
@@ -156,6 +181,7 @@
             padding: 6px 4px;
             border-radius: 0;
             background: transparent;
+            font-size: 15px;
         }
 
         .bill-table input:focus {
@@ -170,7 +196,6 @@
         }
 
         #billNo {
-            background: #f8f9fa;
             font-weight: 600;
         }
 
@@ -181,6 +206,7 @@
         .amount-cell {
             text-align: right;
             white-space: nowrap;
+            font-size: 15px;
         }
 
         .delete-cell {
@@ -198,7 +224,7 @@
 
         .total-row td {
             font-weight: bold;
-            font-size: 17px;
+            font-size: 18px;
             padding: 12px 8px;
         }
 
@@ -206,18 +232,75 @@
             text-align: right;
         }
 
-        .footer {
-            margin-top: 30px;
+        .return-policy {
+            margin-top: 14px;
+            text-align: left;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        /* =========================
+           CUSTOMER RECEIPT / TEAR-OFF
+           ========================= */
+        .receipt-divider {
+            margin-top: 18px;
+            border-top: 2px dotted #333;
+            height: 0;
+        }
+
+        .receipt {
+            padding-top: 10px;
+            min-height: 20%;
+        }
+
+        .receipt-title {
+            display: none;
+        }
+
+        .receipt-subtitle {
+            display: none;
+        }
+
+        .receipt-grid {
+            margin-top: 0;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+
+        .receipt-field {
             display: flex;
-            justify-content: space-between;
+            align-items: baseline;
+            justify-content: flex-start;
+            gap: 8px;
+            border: 0;
+            padding: 0;
+            font-size: 15px;
+            min-height: 20px;
+        }
+
+        .receipt-field .label {
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .receipt-field .value {
+            text-align: left;
+            font-weight: 600;
+            flex: 1;
+            min-height: 18px;
+            border-bottom: 1px dotted #777;
+            padding-bottom: 1px;
+        }
+
+        .receipt-name-date {
+            display: grid;
+            grid-template-columns: 1fr 230px;
             gap: 20px;
         }
 
-        .signature {
-            width: 220px;
-            text-align: center;
-            padding-top: 25px;
-            border-top: 1px solid #222;
+        .receipt-note {
+            display: none;
         }
 
         .message {
@@ -230,17 +313,29 @@
         .success { background: #d1e7dd; color: #0f5132; }
         .error { background: #f8d7da; color: #842029; }
 
-        @media (max-width: 650px) {
+        @media (max-width: 700px) {
             body { padding: 8px; }
 
             .bill { padding: 12px; }
 
-            .customer-grid,
-            .bill-info {
-                grid-template-columns: 1fr;
+            .shop-header {
+                padding: 4px 0 15px;
             }
 
-            #shopName { font-size: 22px; }
+            .seller-contact {
+                position: static;
+                width: auto;
+                text-align: center;
+                margin-top: 8px;
+            }
+
+            .brand-name { font-size: 26px; }
+
+            .bill-info,
+            .customer-grid,
+            .receipt-grid {
+                grid-template-columns: 1fr;
+            }
 
             .bill-table {
                 font-size: 12px;
@@ -257,39 +352,185 @@
             .bill-table .rate-column,
             .bill-table .amount { width: 17%; }
 
-            .footer {
-                flex-direction: column;
+            .receipt-name-date {
+                grid-template-columns: 1fr;
+                gap: 8px;
             }
         }
 
+
+        @page {
+            size: A4 portrait;
+            margin: 5mm;
+        }
+
         @media print {
+            html, body {
+                width: 210mm;
+                height: 297mm;
+            }
+
             body {
                 padding: 0;
+                margin: 0;
                 background: white;
             }
 
             .toolbar,
             .screen-only,
-            .delete-cell,
             #message {
                 display: none !important;
             }
 
             .app {
                 max-width: none;
+                width: 100%;
             }
 
             .bill {
+                position: relative;
+                width: 100%;
+                min-height: 287mm;
                 box-shadow: none;
                 border: 0;
-                padding: 10mm;
+                padding: 3mm;
+                margin: 0;
+                overflow: hidden;
+            }
+
+            .shop-header {
+                padding: 2px 110px 6px 110px;
+                margin-bottom: 5px;
+            }
+
+            .brand-name {
+                font-size: 28px;
+            }
+
+            .proprietor {
+                margin-top: 2px;
+                font-size: 11px;
+            }
+
+            .business-type {
+                margin: 3px auto 2px;
+                font-size: 10px;
+                line-height: 1.1;
+            }
+
+            .shop-address {
+                font-size: 10px;
+            }
+
+            .seller-contact {
+                top: 0;
+                right: 0;
+                width: 110px;
+                font-size: 11px;
+                line-height: 1.15;
+            }
+
+            .bill-info {
+                gap: 4px;
+                margin-bottom: 5px;
+            }
+
+            label {
+                font-size: 10.5px;
+                margin-bottom: 2px;
             }
 
             input {
-                border: 0 !important;
+                padding: 4px;
+                font-size: 11px;
             }
 
-            .bill-table .description { width: 44%; }
+            .customer-box {
+                padding: 4px;
+                margin-bottom: 5px;
+            }
+
+            .customer-grid {
+                gap: 5px;
+            }
+
+            .bill-table {
+                font-size: 11px;
+            }
+
+            .bill-table th,
+            .bill-table td {
+                padding: 1px 2px;
+                height: 7.5mm;
+            }
+
+            .bill-table input {
+                padding: 1px 2px;
+                font-size: 11px;
+                height: 17px;
+            }
+
+            .bill-table .description {
+                width: 47%;
+            }
+
+            .bill-table .serial {
+                width: 7%;
+            }
+
+            .bill-table .qty,
+            .bill-table .rate-column,
+            .bill-table .amount {
+                width: 14%;
+            }
+
+
+            .bill-table td.amount-cell {
+                font-size: 15px;
+            }
+
+            .total-row td {
+                font-size: 11px;
+                padding: 4px 2px;
+                height: 8mm;
+            }
+
+            .return-policy {
+                margin-top: 5px;
+                font-size: 11px;
+            }
+
+            .receipt-divider {
+                position: absolute;
+                left: 3mm;
+                right: 3mm;
+                bottom: 32mm;
+                margin: 0;
+            }
+
+            .receipt {
+                position: absolute;
+                left: 3mm;
+                right: 3mm;
+                bottom: 5mm;
+                padding-top: 6px;
+                min-height: 24mm;
+                margin: 0;
+            }
+
+            .receipt-grid {
+                gap: 3px;
+            }
+
+            .receipt-field {
+                font-size: 13px;
+                min-height: 20px;
+            }
+
+            .receipt-name-date {
+                grid-template-columns: 1fr 190px;
+                gap: 14px;
+            }
         }
     </style>
 </head>
@@ -298,7 +539,7 @@
 <div class="app">
 
     <div class="toolbar">
-        <h1>Billing App</h1>
+        <h1>S.I. GARMENTS Billing App</h1>
 
         <div class="actions">
             <button class="btn-light" onclick="newBill()">New Bill</button>
@@ -312,8 +553,19 @@
     <div class="bill" id="printArea">
 
         <div class="shop-header">
-            <input id="shopName" value="SI Garments " placeholder="SHOP NAME">
-            <input id="shopAddress" value="2/3 kolkata " placeholder="Shop Address">
+            <div class="seller-contact">
+                <div>9903479108</div>
+                <div>8240544458</div>
+            </div>
+
+            <div class="brand-name">S.I. GARMENTS</div>
+            <div class="proprietor">Prop: Ajay Singh (Laltu)</div>
+            <div class="business-type">
+                Wholeseller of Fancy Kurty, Legince &amp; Readymade Garments
+            </div>
+            <div class="shop-address">
+                S/73/1B, Marry Road, Kolkata-700018
+            </div>
         </div>
 
         <div class="bill-info">
@@ -369,9 +621,36 @@
             <button class="btn-secondary" onclick="addRow()">+ Add Item</button>
         </div>
 
-        <div class="footer">
-            <div>Thank you for your business.</div>
-            <div class="signature">Authorized Signature</div>
+        <div class="return-policy">
+            Goods once sold cannot be taken back
+        </div>
+
+        <div class="receipt-divider"></div>
+
+        <div class="receipt">
+            <div class="receipt-grid">
+                <div class="receipt-field">
+                    <span class="label">Bill no.</span>
+                    <span class="value" id="receiptBillNo">-</span>
+                </div>
+
+                <div class="receipt-name-date">
+                    <div class="receipt-field">
+                        <span class="label">Name :</span>
+                        <span class="value" id="receiptName">-</span>
+                    </div>
+
+                    <div class="receipt-field">
+                        <span class="label">Date :</span>
+                        <span class="value" id="receiptDate">-</span>
+                    </div>
+                </div>
+
+                <div class="receipt-field">
+                    <span class="label">Grand total :</span>
+                    <span class="value" id="receiptGrandTotal">₹0.00</span>
+                </div>
+            </div>
         </div>
 
     </div>
@@ -384,39 +663,88 @@
         return "₹" + Number(value || 0).toFixed(2);
     }
 
+    function displayAmount(value, hasInput = true) {
+        if (!hasInput && Number(value || 0) === 0) {
+            return "";
+        }
+
+        return money(value);
+    }
+
+    function formatDate(value) {
+        if (!value) return "-";
+
+        const parts = value.split("-");
+        if (parts.length !== 3) return value;
+
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+
+    function syncReceipt() {
+        document.getElementById("receiptBillNo").textContent =
+            document.getElementById("billNo").value.trim() || "-";
+
+        document.getElementById("receiptName").textContent =
+            document.getElementById("customerName").value.trim() || "-";
+
+        document.getElementById("receiptDate").textContent =
+            formatDate(document.getElementById("billDate").value);
+
+        document.getElementById("receiptGrandTotal").textContent =
+            document.getElementById("grandTotal").textContent;
+    }
+
     function addRow(description = "", quantity = "", rate = "") {
         const row = document.createElement("tr");
 
         row.innerHTML = `
             <td>
-                <input class="description-input" value="${escapeHtml(description)}">
+                <input class="description-input"
+                       value="${escapeHtml(description)}">
             </td>
 
             <td class="serial"></td>
 
             <td>
-                <input class="quantity number-input" type="number" min="0" step="any"
-                       value="${quantity}" placeholder="0">
+                <input class="quantity number-input"
+                       type="number"
+                       min="0"
+                       step="any"
+                       value="${quantity}"
+                       placeholder="">
             </td>
 
             <td>
-                <input class="rate-input number-input" type="number" min="0" step="any"
-                       value="${rate}" placeholder="0.00" inputmode="decimal">
+                <input class="rate-input number-input"
+                       type="number"
+                       min="0"
+                       step="any"
+                       value="${rate}"
+                       placeholder=""
+                       inputmode="decimal">
             </td>
 
             <td class="amount-cell">₹0.00</td>
 
             <td class="delete-cell screen-only">
-                <button class="delete-row" onclick="deleteRow(this)">×</button>
+                <button class="delete-row"
+                        onclick="deleteRow(this)">×</button>
             </td>
         `;
 
         body.appendChild(row);
 
-        row.querySelector(".quantity").addEventListener("input", calculate);
-        row.querySelector(".rate-input").addEventListener("input", calculate);
-        row.querySelector(".rate-input").addEventListener("blur", handleRateComplete);
-        row.querySelector(".description-input").addEventListener("input", calculate);
+        row.querySelector(".quantity")
+            .addEventListener("input", calculate);
+
+        row.querySelector(".rate-input")
+            .addEventListener("input", calculate);
+
+        row.querySelector(".rate-input")
+            .addEventListener("blur", handleRateComplete);
+
+        row.querySelector(".description-input")
+            .addEventListener("input", calculate);
 
         calculate();
     }
@@ -436,8 +764,6 @@
         const rateInput = event.target;
         const row = rateInput.closest("tr");
 
-        // Once the current row's rate is completed, automatically create
-        // the next row. The manual "+ Add Item" button remains available.
         if (
             row === body.lastElementChild &&
             rateInput.value.trim() !== ""
@@ -452,31 +778,77 @@
         [...body.children].forEach((row, index) => {
             row.querySelector(".serial").textContent = index + 1;
 
-            const qty = parseFloat(row.querySelector(".quantity").value) || 0;
-            const rate = parseFloat(row.querySelector(".rate-input").value) || 0;
-            const amount = qty * rate;
+            const qty =
+                parseFloat(row.querySelector(".quantity").value) || 0;
 
-            row.querySelector(".amount-cell").textContent = money(amount);
+            const rate =
+                parseFloat(row.querySelector(".rate-input").value) || 0;
+
+            const amount = qty * rate;
+            const hasInput = row.querySelector(".quantity").value.trim() !== ""
+                || row.querySelector(".rate-input").value.trim() !== "";
+
+            row.querySelector(".amount-cell").textContent =
+                displayAmount(amount, hasInput);
+
             total += amount;
         });
 
-        document.getElementById("grandTotal").textContent = money(total);
+        document.getElementById("grandTotal").textContent =
+            total === 0 && [...body.children].every(row =>
+                row.querySelector(".quantity").value.trim() === "" &&
+                row.querySelector(".rate-input").value.trim() === ""
+            )
+                ? ""
+                : money(total);
+
+        syncReceipt();
     }
 
     function getBillData() {
-        const items = [...body.children].map(row => ({
-            description: row.querySelector(".description-input").value.trim(),
-            quantity: parseFloat(row.querySelector(".quantity").value) || 0,
-            rate: parseFloat(row.querySelector(".rate-input").value) || 0
-        })).filter(item => item.description || item.quantity !== 0 || item.rate !== 0);
+        const items = [...body.children]
+            .map(row => ({
+                description:
+                    row.querySelector(".description-input")
+                        .value.trim(),
+
+                quantity:
+                    parseFloat(
+                        row.querySelector(".quantity").value
+                    ) || 0,
+
+                rate:
+                    parseFloat(
+                        row.querySelector(".rate-input").value
+                    ) || 0
+            }))
+            .filter(item =>
+                item.description ||
+                item.quantity !== 0 ||
+                item.rate !== 0
+            );
 
         return {
-            bill_no: document.getElementById("billNo").value.trim(),
-            date: document.getElementById("billDate").value,
-            shop_name: document.getElementById("shopName").value.trim(),
-            shop_address: document.getElementById("shopAddress").value.trim(),
-            customer_name: document.getElementById("customerName").value.trim(),
-            customer_phone: document.getElementById("customerPhone").value.trim(),
+            bill_no:
+                document.getElementById("billNo").value.trim(),
+
+            date:
+                document.getElementById("billDate").value,
+
+            shop_name:
+                "S.I. GARMENTS",
+
+            shop_address:
+                "S/73/1B, Marry Road, Kolkata-700018",
+
+            customer_name:
+                document.getElementById("customerName")
+                    .value.trim(),
+
+            customer_phone:
+                document.getElementById("customerPhone")
+                    .value.trim(),
+
             items: items
         };
     }
@@ -509,34 +881,55 @@
             const result = await response.json();
 
             if (!response.ok || !result.ok) {
-                showMessage(result.message || "Could not save bill.", false);
+                showMessage(
+                    result.message || "Could not save bill.",
+                    false
+                );
                 return;
             }
 
-            document.getElementById("billNo").value = result.bill.bill_no;
+            document.getElementById("billNo").value =
+                result.bill.bill_no;
+
+            syncReceipt();
+
             showMessage(result.message, true);
+
         } catch (error) {
-            showMessage("Server error. Please try again.", false);
+            showMessage(
+                "Server error. Please try again.",
+                false
+            );
         }
     }
 
     function newBill() {
         document.getElementById("billNo").value = "";
+
         document.getElementById("billDate").value =
             new Date().toISOString().slice(0, 10);
+
         document.getElementById("customerName").value = "";
         document.getElementById("customerPhone").value = "";
 
         body.innerHTML = "";
         addRow();
 
+        syncReceipt();
+
         showMessage("New bill ready.", true);
     }
 
     function showMessage(text, success) {
-        const box = document.getElementById("message");
+        const box =
+            document.getElementById("message");
+
         box.textContent = text;
-        box.className = "message " + (success ? "success" : "error");
+
+        box.className =
+            "message " +
+            (success ? "success" : "error");
+
         box.style.display = "block";
 
         setTimeout(() => {
@@ -553,8 +946,17 @@
             .replaceAll("'", "&#039;");
     }
 
-    // Start with one empty item row.
+    document.getElementById("billNo")
+        .addEventListener("input", syncReceipt);
+
+    document.getElementById("customerName")
+        .addEventListener("input", syncReceipt);
+
+    document.getElementById("billDate")
+        .addEventListener("input", syncReceipt);
+
     addRow();
+    syncReceipt();
 </script>
 </body>
 </html>
